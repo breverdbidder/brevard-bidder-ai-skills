@@ -12,20 +12,23 @@
         .glass { background: rgba(20, 20, 35, 0.8); backdrop-filter: blur(10px); border: 1px solid rgba(0, 255, 159, 0.2); }
         .glow { box-shadow: 0 0 20px rgba(0, 255, 159, 0.3); }
         .cyber-text { background: linear-gradient(90deg, var(--cyber-green), var(--cyber-blue)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .pulse { animation: pulse 2s infinite; }
+        @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
     </style>
 </head>
 <body class="text-gray-100">
     <div class="container mx-auto px-4 py-8 max-w-7xl">
         <!-- Header -->
         <div class="glass rounded-2xl p-6 mb-8 glow">
-            <div class="flex items-center justify-between">
+            <div class="flex items-center justify-between flex-wrap gap-4">
                 <div>
                     <h1 class="text-3xl font-bold cyber-text">BrevardBidderAI Skills System</h1>
-                    <p class="text-gray-400 mt-1">Autonomous AI Development Intelligence</p>
+                    <p class="text-gray-400 mt-1">Autonomous AI Development Intelligence • v2.0.0</p>
                 </div>
                 <div class="text-right">
                     <div class="text-sm text-gray-500">Last Updated</div>
                     <div id="last-update" class="text-cyan-400 font-mono">Loading...</div>
+                    <div id="status" class="text-xs text-green-400 mt-1">● Connected</div>
                 </div>
             </div>
         </div>
@@ -50,7 +53,7 @@
                     <div class="text-5xl opacity-50">✅</div>
                 </div>
                 <div class="mt-3 h-2 bg-gray-700 rounded-full overflow-hidden">
-                    <div id="success-bar" class="h-full bg-gradient-to-r from-green-500 to-cyan-400 transition-all" style="width: 0%"></div>
+                    <div id="success-bar" class="h-full bg-gradient-to-r from-green-500 to-cyan-400 transition-all duration-500" style="width: 0%"></div>
                 </div>
             </div>
             <div class="glass rounded-xl p-6 hover:glow transition-all">
@@ -87,10 +90,10 @@
 
         <!-- Skills Table -->
         <div class="glass rounded-xl p-6 mb-8">
-            <div class="flex items-center justify-between mb-4">
+            <div class="flex items-center justify-between mb-4 flex-wrap gap-4">
                 <h2 class="text-xl font-semibold cyber-text">Skills Inventory</h2>
                 <input type="text" id="search" placeholder="Search skills..." 
-                    class="bg-gray-800 border border-gray-700 rounded-lg px-4 py-2 text-sm focus:border-cyan-400 focus:outline-none">
+                    class="bg-gray-800 border border-gray-700 rounded-lg px-4 py-2 text-sm focus:border-cyan-400 focus:outline-none w-full sm:w-auto">
             </div>
             <div class="overflow-x-auto">
                 <table class="w-full">
@@ -111,13 +114,13 @@
 
         <!-- Footer -->
         <div class="text-center text-gray-500 text-sm">
-            <p>Created by Ariel Shapira, Solo Founder - Everest Capital USA</p>
-            <p class="mt-1">BrevardBidderAI v13.4.0 | AI Skills System v1.0.0</p>
+            <p>Created by <span class="text-cyan-400">Ariel Shapira</span>, Solo Founder - Everest Capital USA</p>
+            <p class="mt-1">BrevardBidderAI v13.4.0 | AI Skills System v2.0.0</p>
         </div>
     </div>
 
     <script>
-        // Supabase config - embedded for autonomous operation
+        // Supabase config - embedded for autonomous operation (anon key - safe to expose)
         const SUPABASE_URL = 'https://mocerqjnksmhcjzxrewo.supabase.co';
         const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1vY2VycWpua3NtaGNqenhyZXdvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjQ1MzI1MjYsImV4cCI6MjA4MDEwODUyNn0.ySFJIOngWWB0aqYra4PoGFuqcbdHOx1ZV6T9-klKQDw';
         
@@ -131,11 +134,14 @@
 
         async function fetchData() {
             try {
-                // Fetch skills
+                document.getElementById('status').innerHTML = '● Fetching...';
+                document.getElementById('status').className = 'text-xs text-yellow-400 mt-1 pulse';
+                
+                // Fetch skills from insights table
                 const skillsRes = await fetch(`${SUPABASE_URL}/rest/v1/insights?insight_type=eq.ai_skill&status=eq.Active`, { headers });
                 const skills = await skillsRes.json();
                 
-                // Fetch tasks
+                // Fetch tasks from activities table
                 const tasksRes = await fetch(`${SUPABASE_URL}/rest/v1/activities?activity_type=eq.skill_task&select=id`, { headers });
                 const tasks = await tasksRes.json();
                 
@@ -162,7 +168,9 @@
                             category,
                             uses,
                             successRate: (successRate * 100).toFixed(0) + '%',
+                            successValue: successRate * 100,
                             timeSaved: timeSaved.toFixed(0) + 'm',
+                            timeSavedValue: timeSaved,
                             status: successRate >= 0.8 ? 'Optimal' : successRate >= 0.6 ? 'Review' : 'Needs Work'
                         });
                     } catch(e) {}
@@ -177,21 +185,23 @@
                 document.getElementById('time-saved').textContent = (totalTimeSaved / 60).toFixed(1) + 'h';
                 document.getElementById('total-docs').textContent = tasks.length;
                 document.getElementById('last-update').textContent = new Date().toLocaleTimeString();
+                document.getElementById('status').innerHTML = '● Connected';
+                document.getElementById('status').className = 'text-xs text-green-400 mt-1';
                 
                 // Update table
                 const tbody = document.getElementById('skills-table');
                 tbody.innerHTML = skillsData.map(s => `
-                    <tr class="border-b border-gray-800 hover:bg-gray-800/50">
+                    <tr class="border-b border-gray-800 hover:bg-gray-800/50 transition-colors">
                         <td class="py-3 font-medium">${s.name}</td>
-                        <td class="py-3"><span class="px-2 py-1 bg-gray-700 rounded text-xs">${s.category}</span></td>
-                        <td class="py-3">${s.uses}</td>
-                        <td class="py-3">${s.successRate}</td>
-                        <td class="py-3">${s.timeSaved}</td>
+                        <td class="py-3"><span class="px-2 py-1 bg-gray-700 rounded text-xs uppercase">${s.category}</span></td>
+                        <td class="py-3 font-mono">${s.uses}</td>
+                        <td class="py-3 font-mono ${s.successValue >= 80 ? 'text-green-400' : s.successValue >= 60 ? 'text-yellow-400' : 'text-red-400'}">${s.successRate}</td>
+                        <td class="py-3 font-mono text-purple-400">${s.timeSaved}</td>
                         <td class="py-3">
-                            <span class="px-2 py-1 rounded text-xs ${
-                                s.status === 'Optimal' ? 'bg-green-900 text-green-300' :
-                                s.status === 'Review' ? 'bg-yellow-900 text-yellow-300' :
-                                'bg-red-900 text-red-300'
+                            <span class="px-2 py-1 rounded text-xs font-medium ${
+                                s.status === 'Optimal' ? 'bg-green-900/50 text-green-300 border border-green-700' :
+                                s.status === 'Review' ? 'bg-yellow-900/50 text-yellow-300 border border-yellow-700' :
+                                'bg-red-900/50 text-red-300 border border-red-700'
                             }">${s.status}</span>
                         </td>
                     </tr>
@@ -202,11 +212,13 @@
                 
             } catch(e) {
                 console.error('Fetch error:', e);
+                document.getElementById('status').innerHTML = '● Error';
+                document.getElementById('status').className = 'text-xs text-red-400 mt-1';
             }
         }
 
         function updateCharts(categories, skills) {
-            const catLabels = Object.keys(categories);
+            const catLabels = Object.keys(categories).map(c => c.charAt(0).toUpperCase() + c.slice(1));
             const catData = Object.values(categories);
             
             if (categoryChart) categoryChart.destroy();
@@ -216,24 +228,43 @@
                     labels: catLabels,
                     datasets: [{
                         data: catData,
-                        backgroundColor: ['#00ff9f', '#00d4ff', '#ff6b6b', '#ffd93d', '#6c5ce7', '#a29bfe']
+                        backgroundColor: ['#00ff9f', '#00d4ff', '#ff6b6b', '#ffd93d', '#6c5ce7', '#a29bfe', '#fd79a8'],
+                        borderWidth: 0
                     }]
                 },
                 options: { 
                     responsive: true, 
                     maintainAspectRatio: false,
-                    plugins: { legend: { labels: { color: '#9ca3af' } } }
+                    plugins: { 
+                        legend: { 
+                            position: 'right',
+                            labels: { color: '#9ca3af', padding: 15 } 
+                        } 
+                    }
                 }
             });
             
             if (performanceChart) performanceChart.destroy();
+            const sortedSkills = [...skills].sort((a, b) => b.uses - a.uses).slice(0, 5);
             performanceChart = new Chart(document.getElementById('performanceChart'), {
                 type: 'bar',
                 data: {
-                    labels: skills.slice(0, 5).map(s => s.name.substring(0, 15) + '...'),
+                    labels: sortedSkills.map(s => s.name.length > 18 ? s.name.substring(0, 18) + '...' : s.name),
                     datasets: [
-                        { label: 'Success %', data: skills.slice(0, 5).map(s => parseInt(s.successRate)), backgroundColor: '#00ff9f' },
-                        { label: 'Time Saved (min)', data: skills.slice(0, 5).map(s => parseInt(s.timeSaved)), backgroundColor: '#00d4ff' }
+                        { 
+                            label: 'Success %', 
+                            data: sortedSkills.map(s => s.successValue), 
+                            backgroundColor: 'rgba(0, 255, 159, 0.7)',
+                            borderColor: '#00ff9f',
+                            borderWidth: 1
+                        },
+                        { 
+                            label: 'Uses', 
+                            data: sortedSkills.map(s => s.uses * 5), // Scale for visibility
+                            backgroundColor: 'rgba(0, 212, 255, 0.7)',
+                            borderColor: '#00d4ff',
+                            borderWidth: 1
+                        }
                     ]
                 },
                 options: { 
@@ -241,8 +272,15 @@
                     maintainAspectRatio: false,
                     plugins: { legend: { labels: { color: '#9ca3af' } } },
                     scales: { 
-                        y: { grid: { color: '#374151' }, ticks: { color: '#9ca3af' } },
-                        x: { grid: { color: '#374151' }, ticks: { color: '#9ca3af' } }
+                        y: { 
+                            grid: { color: 'rgba(55, 65, 81, 0.5)' }, 
+                            ticks: { color: '#9ca3af' },
+                            beginAtZero: true
+                        },
+                        x: { 
+                            grid: { color: 'rgba(55, 65, 81, 0.5)' }, 
+                            ticks: { color: '#9ca3af', maxRotation: 45 } 
+                        }
                     }
                 }
             });
@@ -256,7 +294,7 @@
             });
         });
 
-        // Initial load and refresh
+        // Initial load and refresh every 30 seconds
         fetchData();
         setInterval(fetchData, 30000);
     </script>
