@@ -1,0 +1,74 @@
+# BrevardBidderAI Skills System - Weekly Optimization
+# Runs Monday at 3 AM EST to optimize underperforming skills
+
+name: Weekly Skill Optimization
+
+on:
+  schedule:
+    # Monday 3 AM EST = Monday 8 AM UTC
+    - cron: '0 8 * * 1'
+  workflow_dispatch:
+
+env:
+  SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+  SUPABASE_KEY: ${{ secrets.SUPABASE_KEY }}
+
+jobs:
+  optimize-skills:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+      
+      - name: Run optimization analysis
+        run: |
+          python scripts/core/orchestrator.py --optimize
+      
+      - name: Upload optimization prompts
+        uses: actions/upload-artifact@v4
+        with:
+          name: optimization-prompts
+          path: prompts/optimization/
+          retention-days: 30
+          if-no-files-found: ignore
+      
+      - name: Generate weekly report
+        run: |
+          python -c "
+          import sys
+          import json
+          from datetime import datetime, timedelta
+          sys.path.insert(0, 'scripts')
+          from utils.supabase_client import get_client
+          
+          client = get_client()
+          overview = client.get_system_overview()
+          
+          report = {
+              'report_date': datetime.now().isoformat(),
+              'report_type': 'weekly_optimization',
+              **overview
+          }
+          
+          print('=' * 60)
+          print('📊 WEEKLY OPTIMIZATION REPORT')
+          print('=' * 60)
+          print(f'Total Skills: {overview[\"total_skills\"]}')
+          print(f'Success Rate: {overview[\"avg_success_rate\"]*100:.1f}%')
+          print(f'Hours Saved: {overview[\"total_time_saved_hours\"]}')
+          print(f'Pending Analysis: {overview[\"pending_analysis\"]}')
+          print('=' * 60)
+          
+          client.log_system_event('weekly_optimization', report)
+          "
