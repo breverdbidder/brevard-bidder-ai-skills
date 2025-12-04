@@ -1,0 +1,21 @@
+# BrevardBidderAI AI Skills System
+# Python Dependencies
+
+# Core
+supabase>=2.0.0
+python-dotenv>=1.0.0
+
+# AI Model Clients (for multi-model analysis)
+anthropic>=0.7.0
+google-generativeai>=0.3.0
+openai>=1.3.0
+
+# Utilities
+pyyaml>=6.0.0
+requests>=2.31.0
+
+# Optional: Local dashboard
+flask>=3.0.0
+
+# Testing
+pytest>=7.4.0
