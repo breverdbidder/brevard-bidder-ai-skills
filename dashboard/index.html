@@ -3,517 +3,262 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>BrevardBidderAI Skills System | Intelligence Dashboard</title>
-    
-    <!-- Fonts -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
-    
+    <title>BrevardBidderAI Skills Dashboard</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    fontFamily: {
-                        'display': ['Space Grotesk', 'sans-serif'],
-                        'mono': ['JetBrains Mono', 'monospace'],
-                    },
-                    colors: {
-                        'obsidian': {
-                            50: '#f6f6f7',
-                            100: '#e2e3e5',
-                            200: '#c5c6cb',
-                            300: '#a0a2a9',
-                            400: '#7b7d86',
-                            500: '#60636b',
-                            600: '#4c4e55',
-                            700: '#3f4046',
-                            800: '#35363a',
-                            900: '#1a1b1e',
-                            950: '#0d0e10',
-                        },
-                        'cyber': {
-                            primary: '#00ff9f',
-                            secondary: '#00d4ff',
-                            accent: '#ff006e',
-                            warning: '#ffbe0b',
-                        }
-                    }
-                }
-            }
-        }
-    </script>
-    
     <style>
-        body {
-            background: linear-gradient(135deg, #0d0e10 0%, #1a1b1e 50%, #0d0e10 100%);
-            min-height: 100vh;
-        }
-        
-        .glass-card {
-            background: rgba(26, 27, 30, 0.7);
-            backdrop-filter: blur(20px);
-            border: 1px solid rgba(0, 255, 159, 0.1);
-            box-shadow: 
-                0 0 40px rgba(0, 255, 159, 0.05),
-                inset 0 1px 0 rgba(255, 255, 255, 0.05);
-        }
-        
-        .stat-glow {
-            text-shadow: 0 0 20px currentColor;
-        }
-        
-        .pulse-ring {
-            animation: pulse-ring 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
-        }
-        
-        @keyframes pulse-ring {
-            0%, 100% { opacity: 0.3; transform: scale(1); }
-            50% { opacity: 0.8; transform: scale(1.05); }
-        }
-        
-        .gradient-text {
-            background: linear-gradient(135deg, #00ff9f, #00d4ff);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
-        
-        .status-ready { color: #00ff9f; }
-        .status-pending { color: #ffbe0b; }
-        .status-error { color: #ff006e; }
-        
-        .metric-bar {
-            background: linear-gradient(90deg, #00ff9f 0%, #00d4ff 100%);
-        }
-        
-        .table-row:hover {
-            background: rgba(0, 255, 159, 0.05);
-        }
-        
-        /* Custom scrollbar */
-        ::-webkit-scrollbar { width: 8px; }
-        ::-webkit-scrollbar-track { background: #1a1b1e; }
-        ::-webkit-scrollbar-thumb { 
-            background: linear-gradient(180deg, #00ff9f, #00d4ff);
-            border-radius: 4px;
-        }
+        :root { --cyber-green: #00ff9f; --cyber-blue: #00d4ff; }
+        body { background: linear-gradient(135deg, #0a0a0f 0%, #1a1a2e 50%, #0a0a0f 100%); min-height: 100vh; }
+        .glass { background: rgba(20, 20, 35, 0.8); backdrop-filter: blur(10px); border: 1px solid rgba(0, 255, 159, 0.2); }
+        .glow { box-shadow: 0 0 20px rgba(0, 255, 159, 0.3); }
+        .cyber-text { background: linear-gradient(90deg, var(--cyber-green), var(--cyber-blue)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
     </style>
 </head>
-
-<body class="font-display text-obsidian-100">
-    <!-- Header -->
-    <header class="border-b border-obsidian-800 p-6">
-        <div class="max-w-7xl mx-auto flex items-center justify-between">
-            <div class="flex items-center gap-4">
-                <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-cyber-primary to-cyber-secondary flex items-center justify-center">
-                    <span class="text-2xl">🎯</span>
-                </div>
+<body class="text-gray-100">
+    <div class="container mx-auto px-4 py-8 max-w-7xl">
+        <!-- Header -->
+        <div class="glass rounded-2xl p-6 mb-8 glow">
+            <div class="flex items-center justify-between">
                 <div>
-                    <h1 class="text-2xl font-bold gradient-text">BrevardBidderAI Skills</h1>
-                    <p class="text-obsidian-400 text-sm font-mono">Agentic AI Development System</p>
+                    <h1 class="text-3xl font-bold cyber-text">BrevardBidderAI Skills System</h1>
+                    <p class="text-gray-400 mt-1">Autonomous AI Development Intelligence</p>
                 </div>
-            </div>
-            
-            <div class="flex items-center gap-4">
-                <div class="flex items-center gap-2 text-sm">
-                    <span class="w-2 h-2 rounded-full bg-cyber-primary pulse-ring"></span>
-                    <span class="text-obsidian-300">System Online</span>
+                <div class="text-right">
+                    <div class="text-sm text-gray-500">Last Updated</div>
+                    <div id="last-update" class="text-cyan-400 font-mono">Loading...</div>
                 </div>
-                <button onclick="refreshData()" class="px-4 py-2 bg-obsidian-800 hover:bg-obsidian-700 rounded-lg transition font-mono text-sm">
-                    ↻ Refresh
-                </button>
             </div>
         </div>
-    </header>
 
-    <main class="max-w-7xl mx-auto p-6 space-y-6">
-        
         <!-- Stats Grid -->
-        <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
-            <!-- Total Skills -->
-            <div class="glass-card rounded-2xl p-6">
-                <div class="flex items-start justify-between">
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+            <div class="glass rounded-xl p-6 hover:glow transition-all">
+                <div class="flex items-center justify-between">
                     <div>
-                        <p class="text-obsidian-400 text-sm uppercase tracking-wider">Skills Created</p>
-                        <p class="text-4xl font-bold text-cyber-primary stat-glow mt-2" id="total-skills">—</p>
+                        <p class="text-gray-400 text-sm uppercase tracking-wide">Total Skills</p>
+                        <p id="total-skills" class="text-4xl font-bold cyber-text mt-2">-</p>
                     </div>
-                    <span class="text-3xl opacity-50">🎯</span>
-                </div>
-                <div class="mt-4 pt-4 border-t border-obsidian-700">
-                    <span class="text-xs text-obsidian-400">Active & Deployed</span>
+                    <div class="text-5xl opacity-50">🎯</div>
                 </div>
             </div>
-            
-            <!-- Success Rate -->
-            <div class="glass-card rounded-2xl p-6">
-                <div class="flex items-start justify-between">
+            <div class="glass rounded-xl p-6 hover:glow transition-all">
+                <div class="flex items-center justify-between">
                     <div>
-                        <p class="text-obsidian-400 text-sm uppercase tracking-wider">Success Rate</p>
-                        <p class="text-4xl font-bold text-cyber-secondary stat-glow mt-2" id="success-rate">—</p>
+                        <p class="text-gray-400 text-sm uppercase tracking-wide">Success Rate</p>
+                        <p id="success-rate" class="text-4xl font-bold text-green-400 mt-2">-</p>
                     </div>
-                    <span class="text-3xl opacity-50">✓</span>
+                    <div class="text-5xl opacity-50">✅</div>
                 </div>
-                <div class="mt-4 pt-4 border-t border-obsidian-700">
-                    <div class="w-full bg-obsidian-800 rounded-full h-2">
-                        <div class="metric-bar h-2 rounded-full transition-all duration-1000" id="success-bar" style="width: 0%"></div>
-                    </div>
+                <div class="mt-3 h-2 bg-gray-700 rounded-full overflow-hidden">
+                    <div id="success-bar" class="h-full bg-gradient-to-r from-green-500 to-cyan-400 transition-all" style="width: 0%"></div>
                 </div>
             </div>
-            
-            <!-- Time Saved -->
-            <div class="glass-card rounded-2xl p-6">
-                <div class="flex items-start justify-between">
+            <div class="glass rounded-xl p-6 hover:glow transition-all">
+                <div class="flex items-center justify-between">
                     <div>
-                        <p class="text-obsidian-400 text-sm uppercase tracking-wider">Hours Saved</p>
-                        <p class="text-4xl font-bold text-cyber-warning stat-glow mt-2" id="time-saved">—</p>
+                        <p class="text-gray-400 text-sm uppercase tracking-wide">Time Saved</p>
+                        <p id="time-saved" class="text-4xl font-bold text-purple-400 mt-2">-</p>
                     </div>
-                    <span class="text-3xl opacity-50">⏱</span>
-                </div>
-                <div class="mt-4 pt-4 border-t border-obsidian-700">
-                    <span class="text-xs text-obsidian-400">Cumulative Developer Time</span>
+                    <div class="text-5xl opacity-50">⏱️</div>
                 </div>
             </div>
-            
-            <!-- Documentation -->
-            <div class="glass-card rounded-2xl p-6">
-                <div class="flex items-start justify-between">
+            <div class="glass rounded-xl p-6 hover:glow transition-all">
+                <div class="flex items-center justify-between">
                     <div>
-                        <p class="text-obsidian-400 text-sm uppercase tracking-wider">Tasks Documented</p>
-                        <p class="text-4xl font-bold text-cyber-accent stat-glow mt-2" id="total-docs">—</p>
+                        <p class="text-gray-400 text-sm uppercase tracking-wide">Tasks Documented</p>
+                        <p id="total-docs" class="text-4xl font-bold text-orange-400 mt-2">-</p>
                     </div>
-                    <span class="text-3xl opacity-50">📄</span>
-                </div>
-                <div class="mt-4 pt-4 border-t border-obsidian-700">
-                    <span class="text-xs font-mono" id="analysis-status">Loading...</span>
+                    <div class="text-5xl opacity-50">📄</div>
                 </div>
             </div>
         </div>
 
         <!-- Charts Row -->
-        <div class="grid lg:grid-cols-2 gap-6">
-            <!-- Skills by Category -->
-            <div class="glass-card rounded-2xl p-6">
-                <h2 class="text-lg font-semibold mb-4 flex items-center gap-2">
-                    <span class="text-cyber-primary">▲</span> Skills by Category
-                </h2>
-                <canvas id="categoryChart" height="200"></canvas>
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+            <div class="glass rounded-xl p-6">
+                <h2 class="text-xl font-semibold mb-4 cyber-text">Skills by Category</h2>
+                <div class="h-64"><canvas id="categoryChart"></canvas></div>
             </div>
-            
-            <!-- Usage Trend -->
-            <div class="glass-card rounded-2xl p-6">
-                <h2 class="text-lg font-semibold mb-4 flex items-center gap-2">
-                    <span class="text-cyber-secondary">◆</span> Performance Metrics
-                </h2>
-                <canvas id="performanceChart" height="200"></canvas>
+            <div class="glass rounded-xl p-6">
+                <h2 class="text-xl font-semibold mb-4 cyber-text">Performance Overview</h2>
+                <div class="h-64"><canvas id="performanceChart"></canvas></div>
             </div>
         </div>
 
         <!-- Skills Table -->
-        <div class="glass-card rounded-2xl p-6">
-            <div class="flex items-center justify-between mb-6">
-                <h2 class="text-lg font-semibold flex items-center gap-2">
-                    <span class="text-cyber-primary">●</span> Skills Inventory
-                </h2>
-                <div class="flex items-center gap-2">
-                    <input type="text" id="search-skills" placeholder="Search skills..." 
-                           class="px-4 py-2 bg-obsidian-800 border border-obsidian-700 rounded-lg text-sm focus:border-cyber-primary outline-none w-64">
-                </div>
+        <div class="glass rounded-xl p-6 mb-8">
+            <div class="flex items-center justify-between mb-4">
+                <h2 class="text-xl font-semibold cyber-text">Skills Inventory</h2>
+                <input type="text" id="search" placeholder="Search skills..." 
+                    class="bg-gray-800 border border-gray-700 rounded-lg px-4 py-2 text-sm focus:border-cyan-400 focus:outline-none">
             </div>
-            
             <div class="overflow-x-auto">
                 <table class="w-full">
                     <thead>
-                        <tr class="text-left border-b border-obsidian-700">
-                            <th class="pb-4 text-obsidian-400 font-medium text-sm">SKILL</th>
-                            <th class="pb-4 text-obsidian-400 font-medium text-sm">CATEGORY</th>
-                            <th class="pb-4 text-obsidian-400 font-medium text-sm">USES</th>
-                            <th class="pb-4 text-obsidian-400 font-medium text-sm">SUCCESS</th>
-                            <th class="pb-4 text-obsidian-400 font-medium text-sm">TIME SAVED</th>
-                            <th class="pb-4 text-obsidian-400 font-medium text-sm">STATUS</th>
+                        <tr class="text-left text-gray-400 text-sm border-b border-gray-700">
+                            <th class="pb-3 font-medium">Skill Name</th>
+                            <th class="pb-3 font-medium">Category</th>
+                            <th class="pb-3 font-medium">Uses</th>
+                            <th class="pb-3 font-medium">Success</th>
+                            <th class="pb-3 font-medium">Time Saved</th>
+                            <th class="pb-3 font-medium">Status</th>
                         </tr>
                     </thead>
-                    <tbody id="skills-table" class="font-mono text-sm">
-                        <tr><td colspan="6" class="py-8 text-center text-obsidian-500">Loading skills...</td></tr>
-                    </tbody>
+                    <tbody id="skills-table"></tbody>
                 </table>
             </div>
         </div>
 
-        <!-- Pending Patterns -->
-        <div class="glass-card rounded-2xl p-6">
-            <h2 class="text-lg font-semibold mb-4 flex items-center gap-2">
-                <span class="text-cyber-warning">◇</span> Patterns Awaiting Skill Creation
-            </h2>
-            <div id="patterns-list" class="space-y-3">
-                <p class="text-obsidian-500 text-sm">Loading patterns...</p>
-            </div>
+        <!-- Footer -->
+        <div class="text-center text-gray-500 text-sm">
+            <p>Created by Ariel Shapira, Solo Founder - Everest Capital USA</p>
+            <p class="mt-1">BrevardBidderAI v13.4.0 | AI Skills System v1.0.0</p>
         </div>
-
-    </main>
-
-    <!-- Footer -->
-    <footer class="border-t border-obsidian-800 p-6 mt-12">
-        <div class="max-w-7xl mx-auto flex items-center justify-between text-sm text-obsidian-500">
-            <p>© 2025 Ariel Shapira | Everest Capital USA</p>
-            <p class="font-mono">BrevardBidderAI v13.4.0</p>
-        </div>
-    </footer>
+    </div>
 
     <script>
-        // Supabase client configuration
-        // These should be set via environment variables in production
-        // For local development, they can be set here or via a config.js file
-        const SUPABASE_URL = window.SUPABASE_URL || 'https://mocerqjnksmhcjzxrewo.supabase.co';
-        const SUPABASE_KEY = window.SUPABASE_KEY || localStorage.getItem('SUPABASE_KEY') || '';
+        // Supabase config - embedded for autonomous operation
+        const SUPABASE_URL = 'https://mocerqjnksmhcjzxrewo.supabase.co';
+        const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1vY2VycWpua3NtaGNqenhyZXdvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjQ1MzI1MjYsImV4cCI6MjA4MDEwODUyNn0.ySFJIOngWWB0aqYra4PoGFuqcbdHOx1ZV6T9-klKQDw';
         
-        // Check if we have credentials
-        if (!SUPABASE_KEY) {
-            const key = prompt('Enter your Supabase anon key (saved in localStorage):');
-            if (key) {
-                localStorage.setItem('SUPABASE_KEY', key);
-                location.reload();
-            }
-        }
-        
-        let categoryChart = null;
-        let performanceChart = null;
-        
-        async function supabaseQuery(table, select = '*', filters = {}) {
-            let url = `${SUPABASE_URL}/rest/v1/${table}?select=${select}`;
-            
-            for (const [key, value] of Object.entries(filters)) {
-                url += `&${key}=${value}`;
-            }
-            
-            const response = await fetch(url, {
-                headers: {
-                    'apikey': SUPABASE_KEY,
-                    'Authorization': `Bearer ${SUPABASE_KEY}`,
-                    'Content-Type': 'application/json'
-                }
-            });
-            
-            return response.json();
-        }
-        
-        async function fetchOverview() {
+        const headers = {
+            'apikey': SUPABASE_KEY,
+            'Authorization': `Bearer ${SUPABASE_KEY}`,
+            'Content-Type': 'application/json'
+        };
+
+        let categoryChart, performanceChart;
+
+        async function fetchData() {
             try {
-                // Fetch tasks count
-                const tasks = await supabaseQuery('skill_tasks', 'id', {});
-                const pendingTasks = await supabaseQuery('skill_tasks', 'id', { 'analyzed': 'eq.false' });
-                
                 // Fetch skills
-                const skills = await supabaseQuery('ai_skills', '*', {});
+                const skillsRes = await fetch(`${SUPABASE_URL}/rest/v1/insights?insight_type=eq.ai_skill&status=eq.Active`, { headers });
+                const skills = await skillsRes.json();
                 
-                // Fetch patterns
-                const patterns = await supabaseQuery('skill_patterns', '*', { 'synthesized': 'eq.false' });
+                // Fetch tasks
+                const tasksRes = await fetch(`${SUPABASE_URL}/rest/v1/activities?activity_type=eq.skill_task&select=id`, { headers });
+                const tasks = await tasksRes.json();
                 
                 // Calculate metrics
-                const totalSkills = skills.length || 0;
-                const totalTasks = tasks.length || 0;
-                const pendingCount = pendingTasks.length || 0;
-                
-                let totalUses = 0;
-                let totalTimeSaved = 0;
-                let successSum = 0;
-                let skillsWithUses = 0;
+                let totalUses = 0, totalTimeSaved = 0, totalSuccess = 0;
+                const categoryCount = {};
+                const skillsData = [];
                 
                 skills.forEach(s => {
-                    totalUses += s.total_uses || 0;
-                    totalTimeSaved += (s.avg_time_saved || 0) * (s.total_uses || 0);
-                    if (s.total_uses > 0) {
-                        successSum += s.success_rate || 0;
-                        skillsWithUses++;
-                    }
+                    try {
+                        const data = JSON.parse(s.action_taken || '{}');
+                        const uses = data.total_uses || s.recurrence_count || 0;
+                        const timeSaved = (data.avg_time_saved || 0) * uses;
+                        const successRate = s.confidence || 0;
+                        const category = data.category || 'other';
+                        
+                        totalUses += uses;
+                        totalTimeSaved += timeSaved;
+                        totalSuccess += successRate;
+                        categoryCount[category] = (categoryCount[category] || 0) + 1;
+                        
+                        skillsData.push({
+                            name: s.title,
+                            category,
+                            uses,
+                            successRate: (successRate * 100).toFixed(0) + '%',
+                            timeSaved: timeSaved.toFixed(0) + 'm',
+                            status: successRate >= 0.8 ? 'Optimal' : successRate >= 0.6 ? 'Review' : 'Needs Work'
+                        });
+                    } catch(e) {}
                 });
                 
-                const avgSuccessRate = skillsWithUses > 0 ? successSum / skillsWithUses : 0;
-                const hoursSaved = (totalTimeSaved / 60).toFixed(1);
+                const avgSuccess = skills.length > 0 ? (totalSuccess / skills.length) : 0;
                 
                 // Update UI
-                document.getElementById('total-skills').textContent = totalSkills;
-                document.getElementById('success-rate').textContent = (avgSuccessRate * 100).toFixed(0) + '%';
-                document.getElementById('success-bar').style.width = (avgSuccessRate * 100) + '%';
-                document.getElementById('time-saved').textContent = hoursSaved;
-                document.getElementById('total-docs').textContent = totalTasks;
+                document.getElementById('total-skills').textContent = skills.length;
+                document.getElementById('success-rate').textContent = (avgSuccess * 100).toFixed(0) + '%';
+                document.getElementById('success-bar').style.width = (avgSuccess * 100) + '%';
+                document.getElementById('time-saved').textContent = (totalTimeSaved / 60).toFixed(1) + 'h';
+                document.getElementById('total-docs').textContent = tasks.length;
+                document.getElementById('last-update').textContent = new Date().toLocaleTimeString();
                 
-                // Analysis status
-                const threshold = 10;
-                const analysisEl = document.getElementById('analysis-status');
-                if (pendingCount >= threshold) {
-                    analysisEl.innerHTML = `<span class="status-ready">● Ready for analysis (${pendingCount} pending)</span>`;
-                } else {
-                    analysisEl.innerHTML = `<span class="status-pending">◐ ${pendingCount}/${threshold} tasks until analysis</span>`;
-                }
-                
-                // Update charts
-                updateCharts(skills);
-                
-                // Update skills table
-                updateSkillsTable(skills);
-                
-                // Update patterns
-                updatePatterns(patterns);
-                
-            } catch (error) {
-                console.error('Error fetching data:', error);
-            }
-        }
-        
-        function updateCharts(skills) {
-            // Category distribution
-            const categories = {};
-            skills.forEach(s => {
-                const cat = s.category || 'other';
-                categories[cat] = (categories[cat] || 0) + 1;
-            });
-            
-            const categoryCtx = document.getElementById('categoryChart').getContext('2d');
-            if (categoryChart) categoryChart.destroy();
-            
-            categoryChart = new Chart(categoryCtx, {
-                type: 'doughnut',
-                data: {
-                    labels: Object.keys(categories),
-                    datasets: [{
-                        data: Object.values(categories),
-                        backgroundColor: [
-                            '#00ff9f',
-                            '#00d4ff',
-                            '#ff006e',
-                            '#ffbe0b',
-                            '#7b7d86',
-                            '#a0a2a9'
-                        ],
-                        borderWidth: 0
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    plugins: {
-                        legend: {
-                            position: 'right',
-                            labels: { color: '#a0a2a9' }
-                        }
-                    }
-                }
-            });
-            
-            // Performance metrics
-            const perfCtx = document.getElementById('performanceChart').getContext('2d');
-            if (performanceChart) performanceChart.destroy();
-            
-            const topSkills = skills.filter(s => s.total_uses > 0).slice(0, 5);
-            
-            performanceChart = new Chart(perfCtx, {
-                type: 'bar',
-                data: {
-                    labels: topSkills.map(s => s.name || s.skill_id),
-                    datasets: [
-                        {
-                            label: 'Success Rate %',
-                            data: topSkills.map(s => (s.success_rate || 0) * 100),
-                            backgroundColor: '#00ff9f',
-                            borderRadius: 4
-                        },
-                        {
-                            label: 'Time Saved (min)',
-                            data: topSkills.map(s => s.avg_time_saved || 0),
-                            backgroundColor: '#00d4ff',
-                            borderRadius: 4
-                        }
-                    ]
-                },
-                options: {
-                    responsive: true,
-                    scales: {
-                        x: { grid: { color: '#35363a' }, ticks: { color: '#a0a2a9' } },
-                        y: { grid: { color: '#35363a' }, ticks: { color: '#a0a2a9' } }
-                    },
-                    plugins: {
-                        legend: { labels: { color: '#a0a2a9' } }
-                    }
-                }
-            });
-        }
-        
-        function updateSkillsTable(skills) {
-            const tbody = document.getElementById('skills-table');
-            
-            if (skills.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="6" class="py-8 text-center text-obsidian-500">No skills created yet</td></tr>';
-                return;
-            }
-            
-            tbody.innerHTML = skills.map(skill => {
-                const successRate = ((skill.success_rate || 0) * 100).toFixed(0);
-                const statusClass = successRate >= 80 ? 'status-ready' : successRate >= 60 ? 'status-pending' : 'status-error';
-                const statusText = successRate >= 80 ? 'Optimal' : successRate >= 60 ? 'Review' : 'Needs Work';
-                
-                return `
-                    <tr class="table-row border-b border-obsidian-800 transition">
-                        <td class="py-4">
-                            <span class="font-medium text-obsidian-100">${skill.name || skill.skill_id}</span>
-                            <span class="block text-xs text-obsidian-500">v${skill.version || '1.0.0'}</span>
-                        </td>
-                        <td class="py-4">
-                            <span class="px-2 py-1 rounded bg-obsidian-800 text-xs">${skill.category || 'general'}</span>
-                        </td>
-                        <td class="py-4">${skill.total_uses || 0}</td>
-                        <td class="py-4 ${statusClass}">${successRate}%</td>
-                        <td class="py-4">${skill.avg_time_saved || 0} min</td>
-                        <td class="py-4">
-                            <span class="${statusClass} text-xs">${statusText}</span>
+                // Update table
+                const tbody = document.getElementById('skills-table');
+                tbody.innerHTML = skillsData.map(s => `
+                    <tr class="border-b border-gray-800 hover:bg-gray-800/50">
+                        <td class="py-3 font-medium">${s.name}</td>
+                        <td class="py-3"><span class="px-2 py-1 bg-gray-700 rounded text-xs">${s.category}</span></td>
+                        <td class="py-3">${s.uses}</td>
+                        <td class="py-3">${s.successRate}</td>
+                        <td class="py-3">${s.timeSaved}</td>
+                        <td class="py-3">
+                            <span class="px-2 py-1 rounded text-xs ${
+                                s.status === 'Optimal' ? 'bg-green-900 text-green-300' :
+                                s.status === 'Review' ? 'bg-yellow-900 text-yellow-300' :
+                                'bg-red-900 text-red-300'
+                            }">${s.status}</span>
                         </td>
                     </tr>
-                `;
-            }).join('');
-        }
-        
-        function updatePatterns(patterns) {
-            const container = document.getElementById('patterns-list');
-            
-            if (patterns.length === 0) {
-                container.innerHTML = '<p class="text-obsidian-500 text-sm">No pending patterns. Document more tasks!</p>';
-                return;
+                `).join('') || '<tr><td colspan="6" class="py-8 text-center text-gray-500">No skills yet. Start documenting tasks!</td></tr>';
+                
+                // Update charts
+                updateCharts(categoryCount, skillsData);
+                
+            } catch(e) {
+                console.error('Fetch error:', e);
             }
+        }
+
+        function updateCharts(categories, skills) {
+            const catLabels = Object.keys(categories);
+            const catData = Object.values(categories);
             
-            container.innerHTML = patterns.map(p => `
-                <div class="flex items-center justify-between p-4 bg-obsidian-800/50 rounded-lg">
-                    <div>
-                        <span class="font-medium">${p.name}</span>
-                        <span class="ml-2 text-xs px-2 py-1 rounded bg-obsidian-700">${p.category}</span>
-                    </div>
-                    <div class="text-right">
-                        <span class="text-cyber-primary">${p.skill_viability}/10</span>
-                        <span class="text-xs text-obsidian-500 block">viability</span>
-                    </div>
-                </div>
-            `).join('');
+            if (categoryChart) categoryChart.destroy();
+            categoryChart = new Chart(document.getElementById('categoryChart'), {
+                type: 'doughnut',
+                data: {
+                    labels: catLabels,
+                    datasets: [{
+                        data: catData,
+                        backgroundColor: ['#00ff9f', '#00d4ff', '#ff6b6b', '#ffd93d', '#6c5ce7', '#a29bfe']
+                    }]
+                },
+                options: { 
+                    responsive: true, 
+                    maintainAspectRatio: false,
+                    plugins: { legend: { labels: { color: '#9ca3af' } } }
+                }
+            });
+            
+            if (performanceChart) performanceChart.destroy();
+            performanceChart = new Chart(document.getElementById('performanceChart'), {
+                type: 'bar',
+                data: {
+                    labels: skills.slice(0, 5).map(s => s.name.substring(0, 15) + '...'),
+                    datasets: [
+                        { label: 'Success %', data: skills.slice(0, 5).map(s => parseInt(s.successRate)), backgroundColor: '#00ff9f' },
+                        { label: 'Time Saved (min)', data: skills.slice(0, 5).map(s => parseInt(s.timeSaved)), backgroundColor: '#00d4ff' }
+                    ]
+                },
+                options: { 
+                    responsive: true, 
+                    maintainAspectRatio: false,
+                    plugins: { legend: { labels: { color: '#9ca3af' } } },
+                    scales: { 
+                        y: { grid: { color: '#374151' }, ticks: { color: '#9ca3af' } },
+                        x: { grid: { color: '#374151' }, ticks: { color: '#9ca3af' } }
+                    }
+                }
+            });
         }
-        
-        function refreshData() {
-            fetchOverview();
-        }
-        
-        // Search functionality
-        document.getElementById('search-skills').addEventListener('input', (e) => {
-            const query = e.target.value.toLowerCase();
-            const rows = document.querySelectorAll('#skills-table tr');
-            rows.forEach(row => {
-                const text = row.textContent.toLowerCase();
-                row.style.display = text.includes(query) ? '' : 'none';
+
+        // Search filter
+        document.getElementById('search').addEventListener('input', function(e) {
+            const term = e.target.value.toLowerCase();
+            document.querySelectorAll('#skills-table tr').forEach(row => {
+                row.style.display = row.textContent.toLowerCase().includes(term) ? '' : 'none';
             });
         });
-        
-        // Initial load
-        fetchOverview();
-        
-        // Auto-refresh every 30 seconds
-        setInterval(fetchOverview, 30000);
+
+        // Initial load and refresh
+        fetchData();
+        setInterval(fetchData, 30000);
     </script>
 </body>
 </html>
