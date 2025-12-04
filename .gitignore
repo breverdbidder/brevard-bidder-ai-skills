@@ -1,0 +1,58 @@
+# BrevardBidderAI Skills System - Git Ignore
+
+# Environment
+.env
+.env.local
+.env.*.local
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+venv/
+env/
+ENV/
+.venv/
+pip-log.txt
+pip-delete-this-directory.txt
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# Logs
+*.log
+logs/
+.ai_skills_system/logs/
+
+# Generated files
+prompts/generated/
+prompts/responses/
+prompts/skills/
+prompts/optimization/
+
+# Metrics (tracked in Supabase)
+.ai_skills_system/metrics/
+
+# Test
+.pytest_cache/
+.coverage
+htmlcov/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Node (if dashboard uses npm)
+node_modules/
+package-lock.json
+
+# Backup files
+*.bak
+*.backup
+backups/
